@@ -19,9 +19,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg libgl1
       - name: Install Playwright browsers
-        run: |
-          npm install playwright
-          npx playwright install --with-deps chromium
+        run: node node_modules/playwright/cli.js install --with-deps chromium
       - name: Render video (software WebGL)
         run: GL=swiftshader node render.mjs video out.mp4
       - name: Upload artifact
