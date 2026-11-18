@@ -17,7 +17,7 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg libgl1-mesa-glx
+          sudo apt-get install -y ffmpeg libgl1
       - name: Render video (software WebGL)
         run: GL=swiftshader node render.mjs video out.mp4
       - name: Upload artifact
