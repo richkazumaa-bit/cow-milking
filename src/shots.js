@@ -458,6 +458,7 @@ function makeSphincter() {
 }
 
 function makeHand() {
+  const M = materials();
   const group = new THREE.Group();
   const root = { group };
   root.root = group; // alias
@@ -515,6 +516,7 @@ function makeHand() {
 function makeOxytocinFlow() {
   const group = new THREE.Group();
   const root = { group };
+  root.root = group; // alias (shot6 does scene.add(oxy.root))
   const M = materials();
   // Brain area
   const brain = new THREE.Mesh(
