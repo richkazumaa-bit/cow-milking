@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { createCanvas } from 'canvas';
 
 // Deterministic RNG so every render is identical
 export function rng(seed = 1) {
@@ -14,7 +13,9 @@ export function rng(seed = 1) {
 }
 
 function canvas(w, h = w) {
-  const c = createCanvas(w, h);
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
   return [c, c.getContext('2d')];
 }
 
