@@ -17,18 +17,13 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg libgl1
-      - name: Install Swiftshader
-        run: |
-          SWIFTSHADER_VER=$(curl -s https://api.github.com/repos/google/swiftshader/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-          wget -qO- "https://github.com/google/swiftshader/releases/download/$SWIFTSHADER_VER/swiftshader-ubuntu22.04.zip" | \
-          unzip -q -
-          mkdir -p /usr/lib/x86_64-linux-gnu
-          sudo mv libEGL.so libGLESv2.so /usr/lib/x86_64-linux-gnu/
+          sudo apt-get install -y ffmpeg libgl1 libgbm1 libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libasound2t64
       - name: Install Playwright browsers
         run: node node_modules/playwright/cli.js install --with-deps chromium
       - name: Render video (software WebGL)
-        run: GL=swiftshader node render.mjs video out.mp4
+        env:
+          GL: swiftshader
+        run: node render.mjs video out.mp4
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
