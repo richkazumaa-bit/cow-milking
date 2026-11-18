@@ -5,7 +5,9 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Software WebGL (SwiftShader) is slow: ~1240 frames at 720x1280 can take well over 30 min.
+    # 360 is the hard maximum GitHub allows for hosted runners.
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
