@@ -24,7 +24,20 @@ const page = await browser.newPage({ viewport: { width: 720, height: 1280 } });
 page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') console.log('[page]', m.text()); });
 page.on('pageerror', e => console.log('[pageerror]', e.message));
 await page.goto(`http://localhost:${port}/index.html?render=1`);
-await page.waitForFunction(() => window.renderAt && window.ready, { timeout: 120000 });
+
+// Wait for ready, with timeout and debug fallback
+try {
+  await page.waitForFunction(() => window.renderAt && window.ready, { timeout: 60000 });
+} catch (err) {
+  const state = await page.evaluate(() => ({
+    hasRenderAt: typeof window.renderAt,
+    ready: String(window.ready),
+    scripts: [...document.scripts].map(s => s.src || 'inline')
+  }));
+  console.error('[debug] page state:', JSON.stringify(state, null, 2));
+  throw err;
+}
+
 await page.evaluate(() => window.ready);
 const shot = () => page.screenshot({ clip: { x: 0, y: 0, width: 720, height: 1280 }, type: 'png' });
 
@@ -41,7 +54,7 @@ if (mode === 'stills') {
   const fps = Number(b || 30), dur = await page.evaluate(() => window.DURATION);
   const from = Number(c || 0), to = Math.min(Number(d || dur), dur);
   const n0 = Math.round(from * fps), n1 = Math.floor(to * fps);
-  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', a], { stdio: ['pipe', 'inherit', 'inherit'] });
+  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', 17, '-pix_fmt', 'yuv420p', a], { stdio: ['pipe', 'inherit', 'inherit'] });
   const T0 = Date.now();
   for (let n = n0; n < n1; n++) {
     await page.evaluate(t => window.renderAt(t), n / fps);
