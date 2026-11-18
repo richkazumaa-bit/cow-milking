@@ -1,0 +1,28 @@
+name: Render Video
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libgl1-mesa-glx
+      - name: Render video (software WebGL)
+        run: GL=swiftshader node render.mjs video out.mp4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cow-milking-video
+          path: out.mp4
+          retention-days: 7
